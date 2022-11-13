@@ -12,7 +12,7 @@ JWT-токен: jwt/create/, jwt/refresh/, jwt/verify/| POST
 ### Технологии
 * Python 3.7.9 64-bit
 * Django 2.2.16
-* sqlparse==0.4.3
+* sqlparse 0.4.3
 ### Запуск проекта в dev-режиме
 - Установите и активируйте виртуальное окружение
 
