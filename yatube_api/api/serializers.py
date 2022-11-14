@@ -1,13 +1,11 @@
-from posts.models import Comment, Follow, Group, Post, User
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
+from posts.models import Comment, Follow, Group, Post, User
+
 
 class PostSerializer(serializers.ModelSerializer):
-    author = SlugRelatedField(
-        slug_field='username',
-        read_only=True
-    )
+    author = SlugRelatedField(slug_field='username', read_only=True)
 
     class Meta:
         fields = '__all__'
@@ -22,10 +20,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = SlugRelatedField(
-        read_only=True,
-        slug_field='username'
-    )
+    author = SlugRelatedField(slug_field='username', read_only=True)
 
     class Meta:
         fields = '__all__'
@@ -40,7 +35,19 @@ class FollowSerializer(serializers.ModelSerializer):
     )
     following = SlugRelatedField(
         slug_field='username',
-        queryset=User.objects.all())
+        queryset=User.objects.all()
+    )
+
+    class Meta:
+        fields = '__all__'
+        model = Follow
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=Follow.objects.all(),
+                fields=('user', 'following'),
+                message='Ошибка валидации данных user и following'
+            )
+        ]
 
     def validate_following(self, following):
         if self.context['request'].user == following:
@@ -49,13 +56,3 @@ class FollowSerializer(serializers.ModelSerializer):
             )
 
         return following
-
-    class Meta:
-        fields = '__all__'
-        model = Follow
-        validators = [
-            serializers.UniqueTogetherValidator(
-                queryset=Follow.objects.all(),
-                fields=('user', 'following')
-            )
-        ]
